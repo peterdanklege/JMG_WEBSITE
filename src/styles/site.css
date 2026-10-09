@@ -541,6 +541,42 @@ ul, ol {
     background: linear-gradient(135deg, #33DDBB 0%, var(--green) 100%);
 }
 
+
+/* Carousel feature illustrations */
+.mockup-card::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 50%;
+    background: linear-gradient(to top, rgba(0,0,0,0.32), transparent);
+    pointer-events: none;
+}
+
+.mockup-art {
+    position: absolute;
+    top: 8px;
+    left: 0;
+    width: 100%;
+    height: 52%;
+    z-index: 1;
+    pointer-events: none;
+}
+
+.art-float {
+    animation: artFloat 3.6s ease-in-out infinite;
+}
+
+@keyframes artFloat {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-4px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .art-float { animation: none; }
+}
+
 /* ==========================================
    PHYSICS / SERVICES SECTION
    ========================================== */

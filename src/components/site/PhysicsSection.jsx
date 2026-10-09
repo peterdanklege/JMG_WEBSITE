@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react';
 import Matter from 'matter-js';
 
+// Add or remove blocks here. Colours cycle through the four brand accents.
 const SERVICES = [
     { text: 'Frontend', color: '#FF6B35' },
     { text: 'Backend', color: '#00D4AA' },
@@ -9,7 +10,18 @@ const SERVICES = [
     { text: 'Branding', color: '#FF6B35' },
     { text: 'Mobile-First', color: '#00D4AA' },
     { text: 'Analytics', color: '#8B5CF6' },
-    { text: 'Support', color: '#CAFF33' }
+    { text: 'Support', color: '#CAFF33' },
+    // Added from the Pressed in Time project + service list
+    { text: 'WhatsApp Button', color: '#00D4AA' },
+    { text: 'Google Maps', color: '#FF6B35' },
+    { text: 'Contact Forms', color: '#CAFF33' },
+    { text: 'Price Lists', color: '#8B5CF6' },
+    { text: 'Google Reviews', color: '#FF6B35' },
+    { text: 'Online Booking', color: '#00D4AA' },
+    { text: 'Logo Design', color: '#CAFF33' },
+    { text: 'Hosting & Domains', color: '#8B5CF6' },
+    { text: 'Maintenance', color: '#00D4AA' },
+    { text: 'Image Carousels', color: '#FF6B35' },
 ];
 
 export default function PhysicsSection() {
@@ -50,29 +62,71 @@ export default function PhysicsSection() {
         ];
         Composite.add(engine.world, walls);
 
-        // Drag interaction (desktop only; touch devices scroll the page)
-        let mouse = null;
-        let mouseConstraint = { body: null };
-        if (!('ontouchstart' in window)) {
-            mouse = Mouse.create(render.canvas);
-            // Matter.js binds its wheel handler to the modern 'wheel' event (with
-            // preventDefault), not the legacy 'mousewheel'/'DOMMouseScroll' names.
-            // Removing the wrong event name here was the cause of scroll being
-            // locked whenever the cursor was over this section.
-            mouse.element.removeEventListener('wheel', mouse.mousewheel);
-            mouseConstraint = MouseConstraint.create(engine, {
-                mouse: mouse,
-                constraint: { stiffness: 0.2, render: { visible: false } }
-            });
-            Composite.add(engine.world, mouseConstraint);
-            render.mouse = mouse;
-        }
+        // Drag interaction (mouse AND touch).
+        // Previously this was skipped whenever 'ontouchstart' existed on window,
+        // which is true on many touch-capable Windows laptops, so mouse
+        // dragging silently never worked there.
+        const { Query } = Matter;
+        const mouse = Mouse.create(render.canvas);
+        const el = render.canvas;
 
-        const pillBodies = SERVICES.map((s, i) => {
+        // Matter binds 'wheel' with preventDefault, which blocks page scrolling.
+        el.removeEventListener('wheel', mouse.mousewheel);
+        // Matter also preventDefault()s every touch, which blocks scrolling on
+        // phones. Remove its touch handlers and use our own below.
+        el.removeEventListener('touchstart', mouse.mousedown);
+        el.removeEventListener('touchmove', mouse.mousemove);
+        el.removeEventListener('touchend', mouse.mouseup);
+
+        const mouseConstraint = MouseConstraint.create(engine, {
+            mouse: mouse,
+            constraint: { stiffness: 0.2, render: { visible: false } }
+        });
+        Composite.add(engine.world, mouseConstraint);
+        render.mouse = mouse;
+
+        // Let the page keep vertical scrolling on touch unless a block is grabbed.
+        el.style.touchAction = 'pan-y';
+        el.style.cursor = 'grab';
+
+        // Release even if the mouse is let go outside the canvas.
+        const onWindowMouseUp = (e) => mouse.mouseup(e);
+        window.addEventListener('mouseup', onWindowMouseUp);
+
+        let pillBodies = [];
+        let touchDragging = false;
+        const touchPoint = (e) => {
+            const t = e.touches[0] || e.changedTouches[0];
+            const r = el.getBoundingClientRect();
+            return { x: t.clientX - r.left, y: t.clientY - r.top };
+        };
+        const onTouchStart = (e) => {
+            if (!e.touches.length) return;
+            // Only take over the gesture when the finger lands on a block;
+            // otherwise do nothing so the page scrolls normally.
+            if (Query.point(pillBodies, touchPoint(e)).length === 0) return;
+            touchDragging = true;
+            mouse.mousedown(e); // also preventDefault()s, so no scroll for this drag
+        };
+        const onDragTouchMove = (e) => {
+            if (!touchDragging) return;
+            mouse.mousemove(e);
+        };
+        const onTouchEnd = (e) => {
+            if (!touchDragging) return;
+            touchDragging = false;
+            mouse.mouseup(e);
+        };
+        el.addEventListener('touchstart', onTouchStart, { passive: false });
+        el.addEventListener('touchmove', onDragTouchMove, { passive: false });
+        el.addEventListener('touchend', onTouchEnd);
+        el.addEventListener('touchcancel', onTouchEnd);
+
+        pillBodies = SERVICES.map((s, i) => {
             const pillW = Math.max(90, s.text.length * 11 + 40);
             const pillH = 44;
             const x = 100 + Math.random() * (width - 200);
-            const y = -60 - i * 80;
+            const y = -60 - i * 70;
             const body = Bodies.rectangle(x, y, pillW, pillH, {
                 chamfer: { radius: pillH / 2 },
                 restitution: 0.4,
@@ -162,7 +216,12 @@ export default function PhysicsSection() {
             canvasWrap.removeEventListener('mousemove', onMouseMove);
             canvasWrap.removeEventListener('touchmove', onTouchMove);
             canvasWrap.removeEventListener('mouseleave', onMouseLeave);
-            if (mouse) Mouse.clearSourceEvents(mouse);
+            window.removeEventListener('mouseup', onWindowMouseUp);
+            el.removeEventListener('touchstart', onTouchStart);
+            el.removeEventListener('touchmove', onDragTouchMove);
+            el.removeEventListener('touchend', onTouchEnd);
+            el.removeEventListener('touchcancel', onTouchEnd);
+            Mouse.clearSourceEvents(mouse);
             Render.stop(render);
             Runner.stop(runner);
             render.canvas.remove();

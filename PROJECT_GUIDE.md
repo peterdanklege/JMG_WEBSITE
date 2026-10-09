@@ -208,6 +208,19 @@ changes:
 
 ## Changelog
 
+### v3.1 — Carousel art, more blocks, drag fix
+- **Carousel illustrations.** Each "Features we can build" card now has an inline-SVG
+  illustration (`src/components/site/FeatureArt.jsx`), wired up through the `Art` field
+  in the `FEATURES` array in `Marquee.jsx`. To add a card, add a new art component and a new entry.
+- **Physics blocks.** `SERVICES` in `PhysicsSection.jsx` grew from 8 to 18 blocks (WhatsApp Button,
+  Google Maps, Contact Forms, Price Lists, Google Reviews, Online Booking, Logo Design,
+  Hosting & Domains, Maintenance, Image Carousels). Add/remove blocks there as the portfolio grows.
+- **Bug fix — blocks couldn't be dragged on PC.** The old code only enabled dragging when
+  `'ontouchstart' in window` was false, which is true on many touch-capable Windows laptops. Dragging is
+  now always enabled. Matter's own wheel and touch handlers (which call `preventDefault` and block
+  page scroll) are removed; a custom touch handler only captures a gesture when the finger lands on a
+  block, so phones can drag blocks and still scroll the page.
+
 ### v3 — Portfolio page
 - **New page: `/portfolio`** — showcases completed client work as interactive
   case studies. Added `src/pages/Portfolio.jsx` with a self-contained `PROJECTS`
