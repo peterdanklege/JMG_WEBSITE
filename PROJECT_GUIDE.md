@@ -208,6 +208,18 @@ changes:
 
 ## Changelog
 
+### v3.3 — Site-wide dot grid, stronger glow, drag fix at fractional screen scaling
+- **Dot grid is now a fixed, site-wide background** on every page (mounted once in `Layout.jsx` as `.site-bg`,
+  `z-index: -1`). Full-width sections that used solid backgrounds (`.physics-section`, `.home-contact`,
+  `.portfolio-hero`, `.portfolio-stats-strip`, `.portfolio-grid-section`) were made transparent or semi-transparent
+  so the grid shows through. If you add a new full-width section, avoid a solid `background` or the grid will be hidden.
+  Cards/modals keep solid backgrounds for readability. The hero keeps a soft scrim (`.hero::before`).
+- **Stronger hover glow:** bigger radius, brighter dots, soft halo. With `prefers-reduced-motion` the hover glow
+  still works but the ambient wave and ripples are off.
+- **Bug fix — physics blocks couldn't be grabbed on many PCs.** Matter.js reads the screen scale with
+  `parseInt`, so Windows display scaling of 125% / 150% (devicePixelRatio 1.25 / 1.5) became 1 and the pointer was
+  offset 25–50%. `PhysicsSection.jsx` now sets `mouse.pixelRatio` itself (and on resize). Verified at 100/125/150/200%.
+
 ### v3.2 — Interactive hero dot grid
 - **New: `src/components/site/DotGrid.jsx`** — a canvas dot matrix behind the hero. Dots swell and shift
   through the brand colours near the cursor, leave a fading trail, ripple as you move, and send a big

@@ -1,17 +1,9 @@
-import { useState, lazy, Suspense } from 'react';
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import Reveal, { useReveal } from '@/components/site/Reveal';
 import Marquee from '@/components/site/Marquee';
 import PhysicsSection from '@/components/site/PhysicsSection';
 import { sendContactForm } from '@/lib/web3forms';
-
-// Loaded as a separate chunk so the canvas code never delays first paint.
-const DotGrid = lazy(() => import('@/components/site/DotGrid'));
-
-// Skip the animation on data-saver / very low-memory devices; the static dots remain.
-const canAnimateBg = () =>
-    typeof navigator === 'undefined' ||
-    (!navigator.connection?.saveData && (navigator.deviceMemory ?? 4) > 1);
 
 function StatCard({ number, label, delay }) {
     const { ref, visible } = useReveal();
@@ -93,15 +85,6 @@ export default function Home() {
 
             {/* === HERO === */}
             <section className="hero">
-                <div className="hero-bg" aria-hidden="true">
-                    <div className="hero-bg-static" />
-                    {canAnimateBg() && (
-                        <Suspense fallback={null}>
-                            <DotGrid />
-                        </Suspense>
-                    )}
-                    <div className="hero-bg-overlay" />
-                </div>
                 <Reveal>
                     <h1 className="hero-headline">
                         JMG Web<br /><span className="gradient-word">Development</span>

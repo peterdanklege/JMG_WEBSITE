@@ -46,7 +46,7 @@ export default function PhysicsSection() {
                 height,
                 wireframes: false,
                 background: 'transparent',
-                pixelRatio: Math.min(window.devicePixelRatio, 2)
+                pixelRatio: Math.min(window.devicePixelRatio || 1, 2)
             }
         });
 
@@ -68,6 +68,10 @@ export default function PhysicsSection() {
         // dragging silently never worked there.
         const { Query } = Matter;
         const mouse = Mouse.create(render.canvas);
+        // Matter reads the screen scale with parseInt(), so 1.25 / 1.5 (common
+        // Windows display scaling) became 1 and the pointer landed in the wrong
+        // place - blocks could not be grabbed. Set the real value ourselves.
+        mouse.pixelRatio = render.options.pixelRatio;
         const el = render.canvas;
 
         // Matter binds 'wheel' with preventDefault, which blocks page scrolling.
@@ -200,12 +204,13 @@ export default function PhysicsSection() {
         const onResize = () => {
             width = canvasWrap.clientWidth;
             height = canvasWrap.clientHeight;
-            render.canvas.width = width * Math.min(window.devicePixelRatio, 2);
-            render.canvas.height = height * Math.min(window.devicePixelRatio, 2);
-            render.canvas.style.width = width + 'px';
-            render.canvas.style.height = height + 'px';
+            const pr = Math.min(window.devicePixelRatio || 1, 2);
             render.options.width = width;
             render.options.height = height;
+            Render.setPixelRatio(render, pr); // also resizes the canvas bitmap
+            mouse.pixelRatio = pr;
+            render.canvas.style.width = width + 'px';
+            render.canvas.style.height = height + 'px';
             Body.setPosition(walls[0], { x: width / 2, y: height + 30 });
             Body.setPosition(walls[2], { x: width + 30, y: height / 2 });
         };

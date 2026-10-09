@@ -1,15 +1,14 @@
 import { useEffect, useRef } from 'react';
 
 /*
- * Cursor-reactive dot grid for the hero background.
+ * Cursor-reactive dot grid: a fixed, site-wide background (mounted in Layout.jsx).
  *
  * - Dots swell and shift through the brand colours near the cursor, and
  *   leave a fading trail (per-dot "energy" eases back down).
  * - Moving the pointer leaves ripples; clicking/tapping sends a big one.
  * - A faint ambient wave keeps the grid alive when nobody is touching it.
  *
- * Performance: it only animates while the hero is on screen and the tab is
- * visible, caps devicePixelRatio at 2, listens passively, and renders one
+ * Performance: it pauses when the tab is hidden, idles at ~30fps when nothing is lit, caps devicePixelRatio at 2, listens passively, and renders one
  * static frame (no animation) for people who prefer reduced motion.
  */
 const PALETTE = [
@@ -41,21 +40,23 @@ export default function DotGrid() {
         const ctx = canvas.getContext('2d');
         if (!ctx) return;
 
-        const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        // With reduced motion we keep the hover glow (it's user-triggered) but drop
+        // the ambient wave, ripples and welcome animation.
+        const calm = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
         let w = 0, h = 0, dpr = 1;
         let cols = 0, rows = 0, gap = 28, offX = 0, offY = 0;
         let energy = new Float32Array(0);
         let rafId = 0;
         let running = false;
-        let onScreen = true;
+        let lastDraw = 0;
+        let busy = false;
 
         const pointer = { x: -9999, y: -9999, sx: -9999, sy: -9999, active: false, lastRipple: 0, lx: 0, ly: 0 };
         const ripples = []; // { x, y, t, power }
 
         const resize = () => {
-            const rect = parent.getBoundingClientRect();
-            w = rect.width; h = rect.height;
+            w = window.innerWidth; h = window.innerHeight;
             dpr = Math.min(window.devicePixelRatio || 1, 2);
             canvas.width = Math.round(w * dpr);
             canvas.height = Math.round(h * dpr);
@@ -72,13 +73,13 @@ export default function DotGrid() {
         };
 
         const addRipple = (x, y, power) => {
+            if (calm) return;
             ripples.push({ x, y, t: performance.now(), power });
             if (ripples.length > 8) ripples.shift();
         };
 
         const toLocal = (e) => {
-            const r = canvas.getBoundingClientRect();
-            return { x: e.clientX - r.left, y: e.clientY - r.top, inside: e.clientX >= r.left && e.clientX <= r.right && e.clientY >= r.top && e.clientY <= r.bottom };
+            return { x: e.clientX, y: e.clientY, inside: true };
         };
 
         const onMove = (e) => {
@@ -110,7 +111,7 @@ export default function DotGrid() {
                 pointer.sx += (pointer.x - pointer.sx) * 0.2;
                 pointer.sy += (pointer.y - pointer.sy) * 0.2;
             }
-            const R = 190;            // pointer influence radius
+            const R = 220;            // pointer influence radius
             const R2 = R * R;
             const time = now * 0.001;
             // drop dead ripples
@@ -155,12 +156,19 @@ export default function DotGrid() {
                     if (e > 0.02) anyActive = true;
 
                     // ambient wave (very subtle)
-                    const wave = reduceMotion ? 0 : (Math.sin(x * 0.012 + y * 0.009 + time * 1.1) + 1) * 0.5;
-                    const radius = 1.15 + wave * 0.55 + e * 4.6;
+                    const wave = calm ? 0 : (Math.sin(x * 0.012 + y * 0.009 + time * 1.1) + 1) * 0.5;
+                    const radius = 1.15 + wave * 0.55 + e * 5.2;
 
                     if (e > 0.02) {
                         const [cr, cg, cb] = paletteColor(hue + idx * 0.0003);
-                        const a = Math.min(1, 0.3 + e * 0.8);
+                        // soft halo so lit dots read as glowing
+                        if (e > 0.12) {
+                            ctx.fillStyle = `rgba(${cr | 0},${cg | 0},${cb | 0},${Math.min(0.28, e * 0.3)})`;
+                            ctx.beginPath();
+                            ctx.arc(x, y, radius * 2.3, 0, 6.2832);
+                            ctx.fill();
+                        }
+                        const a = Math.min(1, 0.45 + e * 0.9);
                         ctx.fillStyle = `rgba(${cr | 0},${cg | 0},${cb | 0},${a})`;
                     } else {
                         ctx.fillStyle = `rgba(255,255,255,${0.1 + wave * 0.08})`;
@@ -175,11 +183,16 @@ export default function DotGrid() {
 
         const loop = (now) => {
             if (!running) return;
-            draw(now);
             rafId = requestAnimationFrame(loop);
+            // idle (nothing lit): redraw at ~30fps to save battery
+            if (!busy && now - lastDraw < 33) return;
+            lastDraw = now;
+            busy = draw(now);
+            // reduced motion + nothing lit: stop until the pointer moves again
+            if (calm && !busy) stop();
         };
         const start = () => {
-            if (running || reduceMotion || !onScreen || document.hidden) return;
+            if (running || document.hidden) return;
             running = true;
             rafId = requestAnimationFrame(loop);
         };
@@ -192,31 +205,22 @@ export default function DotGrid() {
         const ro = new ResizeObserver(resize);
         ro.observe(parent);
 
-        // Only animate while the hero is actually visible.
-        const io = new IntersectionObserver(([entry]) => {
-            onScreen = entry.isIntersecting;
-            if (onScreen) start(); else stop();
-        }, { threshold: 0 });
-        io.observe(parent);
-
         const onVisibility = () => { if (document.hidden) stop(); else start(); };
         document.addEventListener('visibilitychange', onVisibility);
 
-        if (!reduceMotion) {
-            // Listen on window: hero content sits above the canvas, so the
-            // canvas itself never receives pointer events.
-            window.addEventListener('pointermove', onMove, { passive: true });
-            window.addEventListener('pointerdown', onDown, { passive: true });
-            document.addEventListener('pointerleave', onLeave);
-            // a little welcome ripple so the effect is discoverable
-            setTimeout(() => { addRipple(w / 2, h * 0.45, 0.9); start(); }, 600);
-            start();
-        }
+        // Listen on window: page content sits above the canvas, so the
+        // canvas itself never receives pointer events.
+        window.addEventListener('pointermove', onMove, { passive: true });
+        window.addEventListener('pointerdown', onDown, { passive: true });
+        document.addEventListener('pointerleave', onLeave);
+        // a little welcome ripple so the effect is discoverable
+        const welcome = setTimeout(() => { addRipple(w / 2, h * 0.4, 0.9); start(); }, 600);
+        start();
 
         return () => {
             stop();
+            clearTimeout(welcome);
             ro.disconnect();
-            io.disconnect();
             document.removeEventListener('visibilitychange', onVisibility);
             window.removeEventListener('pointermove', onMove);
             window.removeEventListener('pointerdown', onDown);
@@ -224,5 +228,5 @@ export default function DotGrid() {
         };
     }, []);
 
-    return <canvas ref={canvasRef} className="hero-dotgrid" />;
+    return <canvas ref={canvasRef} className="site-dotgrid" />;
 }

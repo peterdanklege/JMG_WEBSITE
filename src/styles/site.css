@@ -443,17 +443,17 @@ ul, ol {
     }
 
 
-/* Hero interactive dot-grid background */
-.hero-bg {
-    position: absolute;
+/* Site-wide interactive dot-grid background (fixed behind every page) */
+.site-bg {
+    position: fixed;
     inset: 0;
-    z-index: 0;
+    z-index: -1;
     pointer-events: none;
     overflow: hidden;
 }
 
 /* Static fallback: shown instantly, and stays if the canvas never loads. */
-.hero-bg-static {
+.site-bg-static {
     position: absolute;
     inset: 0;
     background-image: radial-gradient(rgba(255,255,255,0.14) 1.2px, transparent 1.4px);
@@ -461,7 +461,7 @@ ul, ol {
     background-position: center;
 }
 
-.hero-dotgrid {
+.site-dotgrid {
     position: absolute;
     inset: 0;
     animation: dotgridIn 0.8s ease both;
@@ -472,28 +472,19 @@ ul, ol {
     to { opacity: 1; }
 }
 
-/* Readability: darkens the middle where the headline and buttons sit,
-   and fades the grid out at the bottom into the next section. */
-.hero-bg-overlay {
+/* Readability: soft scrim behind the hero headline and buttons. */
+.hero::before {
+    content: '';
     position: absolute;
     inset: 0;
-    background:
-        radial-gradient(ellipse 55% 45% at 50% 48%, rgba(10,10,10,0.82) 0%, rgba(10,10,10,0.55) 55%, transparent 100%),
-        linear-gradient(to bottom, rgba(10,10,10,0.5) 0%, transparent 18%, transparent 78%, var(--bg) 100%);
+    background: radial-gradient(ellipse 55% 45% at 50% 48%, rgba(10,10,10,0.6) 0%, rgba(10,10,10,0.3) 60%, transparent 100%);
+    pointer-events: none;
+    z-index: 0;
 }
 
-/* keep hero content above the background */
-.hero > :not(.hero-bg) {
+.hero > * {
     position: relative;
     z-index: 1;
-}
-
-@media (max-width: 768px) {
-    .hero-bg-overlay {
-        background:
-            radial-gradient(ellipse 90% 40% at 50% 40%, rgba(10,10,10,0.8) 0%, rgba(10,10,10,0.5) 60%, transparent 100%),
-            linear-gradient(to bottom, rgba(10,10,10,0.5) 0%, transparent 18%, transparent 78%, var(--bg) 100%);
-    }
 }
 
 /* Marquee */
@@ -635,7 +626,7 @@ ul, ol {
    PHYSICS / SERVICES SECTION
    ========================================== */
 .physics-section {
-    background: var(--surface-1);
+    background: rgba(17,17,17,0.55);
     padding: var(--section-pad-y) 0 0;
     position: relative;
 }
@@ -821,7 +812,7 @@ ul, ol {
    ========================================== */
 .home-contact {
     padding: var(--section-pad-y) 0;
-    background: var(--surface-1);
+    background: rgba(17,17,17,0.6);
 }
 
 .home-contact-inner {
@@ -1695,7 +1686,7 @@ body {
 /* Hero */
 .portfolio-hero {
     padding: 160px 0 80px;
-    background: var(--bg);
+    background: transparent;
     text-align: center;
     position: relative;
     overflow: hidden;
@@ -1726,7 +1717,7 @@ body {
 
 /* Stats strip */
 .portfolio-stats-strip {
-    background: var(--surface-1);
+    background: rgba(17,17,17,0.6);
     border-top: 1px solid var(--border-color);
     border-bottom: 1px solid var(--border-color);
     padding: 32px 0;
@@ -1759,7 +1750,7 @@ body {
 /* Grid section */
 .portfolio-grid-section {
     padding: var(--section-pad-y) 0;
-    background: var(--bg);
+    background: transparent;
 }
 .portfolio-section-head {
     margin-bottom: 56px;
