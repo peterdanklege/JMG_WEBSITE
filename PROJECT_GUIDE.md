@@ -208,6 +208,19 @@ changes:
 
 ## Changelog
 
+### v3.2 — Interactive hero dot grid
+- **New: `src/components/site/DotGrid.jsx`** — a canvas dot matrix behind the hero. Dots swell and shift
+  through the brand colours near the cursor, leave a fading trail, ripple as you move, and send a big
+  ripple on click/tap. A faint ambient wave keeps it alive. Pointer events are listened for on `window`,
+  so hero buttons and links stay fully clickable.
+- **Performance:** loaded with `React.lazy` as its own ~2 KB chunk (never blocks first paint); only animates
+  while the hero is on screen and the tab is visible; devicePixelRatio capped at 2. Respects
+  `prefers-reduced-motion` (static dots) and is skipped entirely on data-saver / very low-memory devices.
+- **Static fallback + readability:** `.hero-bg-static` (pure CSS dots) shows instantly and stays if the canvas
+  doesn't load. `.hero-bg-overlay` darkens the centre behind the headline/CTAs and fades into the next section.
+- **Tuning:** spacing `gap` (30px, 24px on mobile), influence radius `R` (190) and dot sizes are at the top of
+  the `draw` function in `DotGrid.jsx`. Overlay strength is in `.hero-bg-overlay` in `site.css`.
+
 ### v3.1 — Carousel art, more blocks, drag fix
 - **Carousel illustrations.** Each "Features we can build" card now has an inline-SVG
   illustration (`src/components/site/FeatureArt.jsx`), wired up through the `Art` field

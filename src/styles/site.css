@@ -442,6 +442,60 @@ ul, ol {
         transform: scale(1.05);
     }
 
+
+/* Hero interactive dot-grid background */
+.hero-bg {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    overflow: hidden;
+}
+
+/* Static fallback: shown instantly, and stays if the canvas never loads. */
+.hero-bg-static {
+    position: absolute;
+    inset: 0;
+    background-image: radial-gradient(rgba(255,255,255,0.14) 1.2px, transparent 1.4px);
+    background-size: 30px 30px;
+    background-position: center;
+}
+
+.hero-dotgrid {
+    position: absolute;
+    inset: 0;
+    animation: dotgridIn 0.8s ease both;
+}
+
+@keyframes dotgridIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+/* Readability: darkens the middle where the headline and buttons sit,
+   and fades the grid out at the bottom into the next section. */
+.hero-bg-overlay {
+    position: absolute;
+    inset: 0;
+    background:
+        radial-gradient(ellipse 55% 45% at 50% 48%, rgba(10,10,10,0.82) 0%, rgba(10,10,10,0.55) 55%, transparent 100%),
+        linear-gradient(to bottom, rgba(10,10,10,0.5) 0%, transparent 18%, transparent 78%, var(--bg) 100%);
+}
+
+/* keep hero content above the background */
+.hero > :not(.hero-bg) {
+    position: relative;
+    z-index: 1;
+}
+
+@media (max-width: 768px) {
+    .hero-bg-overlay {
+        background:
+            radial-gradient(ellipse 90% 40% at 50% 40%, rgba(10,10,10,0.8) 0%, rgba(10,10,10,0.5) 60%, transparent 100%),
+            linear-gradient(to bottom, rgba(10,10,10,0.5) 0%, transparent 18%, transparent 78%, var(--bg) 100%);
+    }
+}
+
 /* Marquee */
 .marquee-caption {
     text-align: center;
