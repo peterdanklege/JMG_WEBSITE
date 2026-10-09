@@ -105,45 +105,38 @@ self-contained — no external CMS or API. All project data lives in a single
 
 ### Adding a new project
 
-1. Open `src/pages/Portfolio.jsx`
-2. Add a new object to the `PROJECTS` array at the top of the file. Copy an
-   existing entry and update every field. The full schema is:
+1. Save a screenshot of the finished site's home page in `src/assets/portfolio/` (WebP, about 1400px wide,
+   is ideal: `cwebp` or any image tool). Import it at the top of `Portfolio.jsx`.
+2. Add a new object to the **top** of the `PROJECTS` array (newest first). Copy an existing entry:
 
 ```js
 {
-    id: 'unique-slug',           // kebab-case, used as React key
-    name: 'Client Name',         // displayed as heading
-    tagline: 'Short descriptor', // one line under the name
-    category: 'Local Business',  // shown as the tag pill
-    year: '2025',                // displayed on card + modal
-    accentClass: 'accent-green', // controls hover border colour:
-                                 //   'accent-green' | 'accent-orange'
-                                 //   'accent-purple' | 'accent-lime'
-    accentColor: 'var(--green)', // CSS value — used in the modal header border
-                                 // and section number highlights
-    tags: ['React', 'Vite'],     // tech tags shown on card & modal
-    liveUrl: 'https://...',      // set to null if not yet live; shows a
-                                 // "View Live Site" button in the modal when set
-    description: '...',          // 2–3 sentence overview paragraph
-    challenge: '...',            // what problem the client had
-    solution: '...',             // what you built and why
-    features: [                  // bullet list of key features (aim for 8–12)
-        'Feature one',
-        'Feature two',
+    id: 'unique-slug',            // kebab-case, used as React key + modal navigation
+    name: 'Client Name',
+    tagline: 'Short descriptor',
+    category: 'Local Business',   // also drives the filter buttons + "Industries Served" stat
+    year: '2026',
+    accentColor: '#44AADD',       // the client's brand colour: card hover border, tags, numbers, modal button
+    screenshot: myImport,         // the imported image. Omit to fall back to the CSS mockup
+    screenshotAlt: 'Describe what the screenshot shows',
+    urlLabel: 'client.co.za',     // shown in the fake browser bar (the real liveUrl is used when set)
+    tags: ['React', 'Vite'],      // tech tags
+    delivered: ['Web Design'],    // "What we delivered" tags in the modal
+    liveUrl: null,                // set to the real URL: shows a "View Live Site" button
+    pageCount: 3,                 // feeds the "Pages Built" stat
+    highlights: [                 // exactly 3 headline numbers (card + modal)
+        { value: '3', label: 'Pages' },
     ],
-    pages: ['Home', 'About'],    // page names shown as pills in the modal header
-    mockupColors: [              // 3 hex colours used to generate the browser
-        '#1B2B4B',               // mockup graphic inside the card:
-        '#3DBCB8',               //   [0] = dark/nav background
-        '#1B6CA8',               //   [1] = accent/button colour
-    ],                           //   [2] = hero gradient end colour
+    description: '...', challenge: '...', solution: '...',
+    features: ['...'],            // aim for 8-12
+    pages: ['Home', 'About'],
+    mockupColors: ['#1B2B4B', '#3DBCB8', '#1B6CA8'],   // only used if there is no screenshot
 }
 ```
 
-3. No other files need to change — the grid, modal, and stats strip all
-   generate dynamically from the `PROJECTS` array.
-4. Update the stats strip values (clients launched, etc.) manually — they are
-   hardcoded JSX in the `Portfolio` component's stats strip section.
+3. Nothing else needs to change. The grid, modal (Esc to close, arrow keys to switch project),
+   category filters and the stats strip are all generated from `PROJECTS`.
+   The filter buttons appear automatically once there are 2+ categories.
 
 ### CSS
 
@@ -153,7 +146,7 @@ component uses existing site design tokens (`--green`, `--orange`, `--surface-1`
 `--font-heading`, `.reveal`, `.overline`, etc.) so it naturally matches the rest
 of the site without any extra configuration.
 
-### Browser Mockup graphic
+### Browser frame / mockup
 
 Each project card contains a CSS-only `<BrowserMockup>` component that
 simulates what the client's website looks like. It accepts a `colors` array
@@ -207,6 +200,17 @@ changes:
    Vercel CLI / Git integration if that's been set up)
 
 ## Changelog
+
+### v3.4 — Portfolio refresh: Swan Constructions + real screenshots
+- **Portfolio now has two projects:** Swan Constructions (new) and Pressed in Time. Each card uses a real screenshot in a
+  browser frame, a per-client accent colour, 3 headline numbers, and a "View case study" hover.
+- **Pressed in Time corrected** to match the real build: it has no contact form (it is WhatsApp-first), so the
+  old Formspree mention was removed; added the collection checker, 9-service pricing grid, PDF price list, turnaround
+  table, Google reviews, FAQ and Google Ads conversion tracking.
+- **New:** category filters, case-study popup with Esc / arrow-key navigation, body scroll lock, "What we delivered" tags.
+- **Stats strip is now calculated** from `PROJECTS` (clients launched, pages built, industries served). The unverified
+  "5★ Client Satisfaction" figure was removed; add it back once there are testimonials to back it.
+- **Physics blocks:** 5 more (Quote Forms, Case Studies, FAQ Sections, Cookie Consent, Ad Tracking), 23 in total.
 
 ### v3.3 — Site-wide dot grid, stronger glow, drag fix at fractional screen scaling
 - **Dot grid is now a fixed, site-wide background** on every page (mounted once in `Layout.jsx` as `.site-bg`,

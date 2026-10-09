@@ -22,6 +22,12 @@ const SERVICES = [
     { text: 'Hosting & Domains', color: '#8B5CF6' },
     { text: 'Maintenance', color: '#00D4AA' },
     { text: 'Image Carousels', color: '#FF6B35' },
+    // Added from the Swan Constructions + Pressed in Time portfolio projects
+    { text: 'Quote Forms', color: '#8B5CF6' },
+    { text: 'Case Studies', color: '#CAFF33' },
+    { text: 'FAQ Sections', color: '#00D4AA' },
+    { text: 'Cookie Consent', color: '#FF6B35' },
+    { text: 'Ad Tracking', color: '#8B5CF6' },
 ];
 
 export default function PhysicsSection() {
