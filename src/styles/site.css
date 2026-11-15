@@ -2378,3 +2378,89 @@ body {
 
 /* Modal: show the screenshot as a full-width banner above the details */
 .modal-header { grid-template-columns: 1fr; gap: 24px; }
+
+/* ==========================================
+   LOGO IMAGE (navbar + footer)
+   ========================================== */
+.logo, .footer-logo { display: inline-flex; align-items: center; line-height: 0; }
+.logo img { height: 34px; width: auto; display: block; }
+.footer-logo img { height: 40px; width: auto; display: block; }
+@media (max-width: 600px) {
+    .logo img { height: 28px; }
+}
+
+/* ==========================================
+   PROJECT LINK BUTTONS + OTHER PROJECTS
+   ========================================== */
+.portfolio-card-actions {
+    margin-top: auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+.portfolio-card-actions .portfolio-card-cta { margin-top: 0; }
+.portfolio-live-link {
+    --accent: var(--green);
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--accent);
+    border: 1.5px solid var(--accent);
+    background: transparent;
+    padding: 7px 14px;
+    border-radius: 999px;
+    transition: background 0.2s, color 0.2s, transform 0.2s;
+}
+.portfolio-live-link:hover { background: var(--accent); color: #000; transform: translateY(-1px); }
+.portfolio-live-link:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+
+.other-projects-section { padding: 40px 0 var(--section-pad-y); background: transparent; }
+.other-projects-sub {
+    margin-top: 16px;
+    max-width: 560px;
+    color: var(--text-secondary);
+    line-height: 1.7;
+}
+.other-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 24px;
+}
+.other-card {
+    --accent: var(--purple);
+    background: var(--surface-1);
+    border: 1.5px solid var(--border-color);
+    border-radius: 20px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+}
+.other-card:hover { transform: translateY(-6px); border-color: var(--accent); box-shadow: 0 20px 60px rgba(0,0,0,.4); }
+.other-card-image { aspect-ratio: 16 / 9; background: var(--surface-2); overflow: hidden; }
+.other-card-image img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.other-card-body { padding: 24px; display: flex; flex-direction: column; gap: 12px; flex: 1; }
+.other-card-body h3 { font-family: var(--font-heading); font-weight: 800; font-size: 1.3rem; letter-spacing: -0.5px; }
+.other-card-body > p { font-size: 0.875rem; color: var(--text-secondary); line-height: 1.6; }
+.other-status { font-size: 0.72rem; font-weight: 600; color: var(--text-secondary); }
+.other-card-links { margin-top: auto; display: flex; flex-wrap: wrap; gap: 10px; padding-top: 4px; }
+.other-card.other-empty {
+    border-style: dashed;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    gap: 12px;
+    padding: 48px 32px;
+    min-height: 240px;
+}
+.other-card.other-empty:hover { transform: none; box-shadow: none; border-color: var(--border-color); }
+.other-card.other-empty h3 { font-family: var(--font-heading); font-weight: 800; font-size: 1.2rem; color: var(--text-secondary); }
+.other-card.other-empty p { color: var(--text-secondary); font-size: 0.875rem; max-width: 260px; line-height: 1.65; }
+@media (max-width: 600px) {
+    .other-grid { grid-template-columns: 1fr; }
+}
+

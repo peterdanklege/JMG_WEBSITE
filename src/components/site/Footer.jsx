@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import wordmark from '@/assets/jmg-dev-wordmark.png';
 
 const PHRASES = [
     "Turning Ideas Into Digital Experiences.",
@@ -59,9 +60,12 @@ export default function Footer() {
                     </div>
                 </div>
                 <div className="footer-middle">
-                    <Link to="/" className="footer-logo">JMG<span className="accent">.</span>DEV</Link>
+                    <Link to="/" className="footer-logo" aria-label="JMG.DEV home">
+                        <img src={wordmark} alt="JMG.DEV" width="720" height="165" loading="lazy" />
+                    </Link>
                     <div className="footer-nav">
                         <Link to="/">Home</Link>
+                        <Link to="/portfolio">Portfolio</Link>
                         <Link to="/pricing">Pricing</Link>
                         <Link to="/contact">Contact</Link>
                     </div>

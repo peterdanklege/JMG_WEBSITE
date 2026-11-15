@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
+import wordmark from '@/assets/jmg-dev-wordmark.png';
 
 export default function Navbar() {
     const [scrolled, setScrolled] = useState(false);
@@ -36,7 +37,9 @@ export default function Navbar() {
         <>
             <nav className={`navbar ${scrolled ? 'scrolled' : ''}`}>
                 <div className="container">
-                    <Link to="/" className="logo">JMG<span className="accent">.</span>DEV</Link>
+                    <Link to="/" className="logo" aria-label="JMG.DEV home">
+                        <img src={wordmark} alt="JMG.DEV" width="720" height="165" />
+                    </Link>
                     <div className="nav-links">
                         {navItems.map((item) =>
                             <Link key={item.path} to={item.path} className={isActive(item.path) ? "active px-2" : ''}>

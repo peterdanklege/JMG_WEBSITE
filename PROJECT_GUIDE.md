@@ -55,7 +55,14 @@ gets uploaded to a static host (currently deployed on Vercel).
 ## Project structure
 
 ```
+public/                       # Served as-is at the site root (not processed by Vite)
+  favicon.ico, favicon-16.png, favicon-32.png   # Browser tab icons
+  apple-touch-icon.png, icon-192.png, icon-512.png   # Home-screen icons (stacked JMG / DEV square)
+  jmg-dev-logo.png            # Original full JMG.DEV logo (1024x1024), used as the link-preview image
 src/
+  assets/
+    jmg-dev-wordmark.png      # Transparent wordmark used in the navbar and footer
+    portfolio/                # Project screenshots (WebP)
   main.jsx                  # App entry point
   App.jsx                   # Router setup — all page routes are defined here
   index.css                 # Global CSS entry (imports Tailwind etc.)
@@ -67,8 +74,8 @@ src/
   components/
     site/
       Layout.jsx             # Shared page wrapper (wraps every route)
-      Navbar.jsx             # Site navigation
-      Footer.jsx             # Site footer
+      Navbar.jsx             # Site navigation (JMG.DEV wordmark image as the logo)
+      Footer.jsx             # Site footer (wordmark image + nav links)
       Marquee.jsx            # Scrolling marquee/ticker component
       PhysicsSection.jsx     # Physics/animation section on the homepage
       Reveal.jsx             # Scroll-reveal animation wrapper
@@ -122,7 +129,7 @@ self-contained — no external CMS or API. All project data lives in a single
     urlLabel: 'client.co.za',     // shown in the fake browser bar (the real liveUrl is used when set)
     tags: ['React', 'Vite'],      // tech tags
     delivered: ['Web Design'],    // "What we delivered" tags in the modal
-    liveUrl: null,                // set to the real URL: shows a "View Live Site" button
+    liveUrl: 'https://client.co.za/',  // real URL: shows a "Visit Site" button on the card and a "View Live Site" button in the popup (null hides both)
     pageCount: 3,                 // feeds the "Pages Built" stat
     highlights: [                 // exactly 3 headline numbers (card + modal)
         { value: '3', label: 'Pages' },
@@ -138,15 +145,42 @@ self-contained — no external CMS or API. All project data lives in a single
    category filters and the stats strip are all generated from `PROJECTS`.
    The filter buttons appear automatically once there are 2+ categories.
 
+### Other projects (games, software, tools)
+
+Below the client case studies is a **"Beyond Websites"** section for work that isn't a client website. Its data lives in the
+`OTHER_PROJECTS` array in `Portfolio.jsx` (just above the browser-frame code). Newest first. While the array is empty, a
+"More coming soon" card is shown; as soon as you add an entry, that card disappears.
+
+```js
+{
+    id: 'space-dodger',                 // required, unique
+    name: 'Space Dodger',               // required
+    type: 'Game',                       // required: Game | Software | App | Tool | Experiment ...
+    description: 'One or two sentences.',  // required
+    year: '2026',                       // optional
+    status: 'Playable',                 // optional: Playable, In development, Open source ...
+    tags: ['Java', 'LibGDX'],           // optional tech tags
+    accentColor: '#8B5CF6',             // optional, defaults to the site purple
+    image: spaceDodgerImg,              // optional: import a screenshot from src/assets/portfolio/
+    imageAlt: 'Gameplay screenshot',
+    links: [                            // optional buttons, open in a new tab
+        { label: 'Play it', url: 'https://...' },
+        { label: 'Source code', url: 'https://github.com/...' },
+    ],
+}
+```
+
+These cards don't open a popup, don't count towards the stats strip and aren't affected by the category filters.
+
 ### CSS
 
-All Portfolio-specific styles are appended at the bottom of
-`src/styles/site.css` under the `/* PORTFOLIO PAGE */` comment block. The
+Most Portfolio styles are in the `/* PORTFOLIO PAGE */` block of `src/styles/site.css`. The logo image, "Visit Site" buttons
+(`.portfolio-live-link`) and the other-projects section (`.other-*`) are in the last block of the file. The
 component uses existing site design tokens (`--green`, `--orange`, `--surface-1`,
 `--font-heading`, `.reveal`, `.overline`, etc.) so it naturally matches the rest
 of the site without any extra configuration.
 
-### Browser frame / mockup
+### Browser frame / mockup (used when a project has no screenshot)
 
 Each project card contains a CSS-only `<BrowserMockup>` component that
 simulates what the client's website looks like. It accepts a `colors` array
@@ -161,6 +195,18 @@ The last card in the grid is a static placeholder inviting new clients. It will
 automatically move to the end as more `PROJECTS` entries are added (it is
 rendered after the `.map()` call). Remove it once you have enough real projects
 to fill the grid.
+
+## Logo and favicon
+
+- **Navbar / footer:** `src/assets/jmg-dev-wordmark.png` (transparent PNG, 720px wide) is imported in `Navbar.jsx` and `Footer.jsx`.
+  Heights are set in `site.css` (`.logo img`, `.footer-logo img`).
+- **Browser tab and home-screen icons:** the files in `public/`, linked in `index.html`. The square icon is the JMG.DEV artwork
+  cropped into two stacked rows (JMG over DEV) on a dark rounded square, because the full wordmark is unreadable at 16-32px.
+  If the logo ever changes, regenerate all of them: `favicon.ico`, `favicon-16.png`, `favicon-32.png`, `apple-touch-icon.png`
+  (180px), `icon-192.png`, `icon-512.png`.
+- `public/jmg-dev-logo.png` is the original logo, used by the `og:image` tag in `index.html` for link previews (absolute URL
+  `https://jmgweb.co.za/jmg-dev-logo.png`, as social sites require; change it if the domain changes).
+- `index.html` references `/manifest.json`, which doesn't exist in this project yet. It's harmless, but add one (or remove the link) if you want the site installable.
 
 ## The `@/` import alias
 
@@ -200,6 +246,19 @@ changes:
    Vercel CLI / Git integration if that's been set up)
 
 ## Changelog
+
+### v4.3 — Aura Grid, logo, project links, "Beyond Websites" section
+- **New portfolio project: Aura Grid** (concept clothing store, https://arua-grid-clothing.vercel.app/). It has no screenshot yet, so it
+  shows the CSS mockup. To add one: save it in `src/assets/portfolio/`, import it, and add `screenshot` + `screenshotAlt` to its entry.
+- **"Visit Site" button on every project card** (shown whenever `liveUrl` is set). Live URLs are now set for Aura Grid,
+  Swan Constructions (swanconstruction.co.za) and Pressed in Time (www.pressedintimethewedge.co.za).
+- **Logo:** the JMG.DEV wordmark (`src/assets/jmg-dev-wordmark.png`, transparent) replaces the text logo in the navbar and footer.
+  Browser tab / home-screen icons live in `public/` (`favicon.ico`, `favicon-16/32.png`, `apple-touch-icon.png`, `icon-192/512.png`)
+  and are linked in `index.html`. `public/jmg-dev-logo.png` is the original full logo, used for link previews.
+- **New section: "Beyond Websites"** on the Portfolio page for games, software and side projects. Add entries to the
+  `OTHER_PROJECTS` array in `Portfolio.jsx` (a commented example sits above it). While the array is empty a "More coming soon" card shows.
+- Stat label changed from "Clients Launched" to "Projects Launched" (Aura Grid is a concept build, not a client).
+- Footer nav now includes a Portfolio link.
 
 ### v3.4 — Portfolio refresh: Swan Constructions + real screenshots
 - **Portfolio now has two projects:** Swan Constructions (new) and Pressed in Time. Each card uses a real screenshot in a

@@ -9,6 +9,43 @@ import swanConstructionsImg from '@/assets/portfolio/swan-constructions.webp';
 /* Newest first. See PROJECT_GUIDE.md ("Adding a new project") for every field. */
 const PROJECTS = [
     {
+        id: 'aura-grid',
+        name: 'Aura Grid',
+        tagline: 'Minimalist technical wear — online store',
+        category: 'E-commerce',
+        year: '2026',
+        accentColor: '#FF3B30',
+        // No screenshot yet: the card shows the CSS mockup. To use a real one, save it in
+        // src/assets/portfolio/, import it at the top and add:  screenshot: auraImg, screenshotAlt: '...'
+        urlLabel: 'arua-grid-clothing.vercel.app',
+        tags: ['React', 'Tailwind', 'Lucide Icons', 'Vercel', 'E-commerce UI'],
+        delivered: ['Web Design', 'Development', 'Product Pages', 'Cart & Search'],
+        liveUrl: 'https://arua-grid-clothing.vercel.app/',
+        pageCount: 1,
+        highlights: [
+            { value: '4', label: 'Products in the first drop' },
+            { value: 'Cart', label: 'Slide-out drawer' },
+            { value: 'Search', label: 'Full-screen overlay' },
+        ],
+        description: `Aura Grid is a minimalist technical-wear label built around recycled nylon, merino and organic cotton. This is a concept online store that shows how a small clothing brand can look and shop like a much bigger one.`,
+        challenge: `Clothing buyers decide fast and on a phone. The store needed to feel premium and technical, show real product detail (materials, specs, care, stock) and make it easy to pick a size and add to a cart without ever leaving the page.`,
+        solution: `A single-page store with a high-contrast black, white and signal-red look and monospaced "spec sheet" typography. A product grid leads into a detailed product view with a second angle, size selector, per-size stock and collapsible specs and care sections. Add-to-cart opens a slide-out cart with a running total, and a full-screen search overlay sits one tap away.`,
+        features: [
+            'Product grid with category labels and clear pricing',
+            'Detailed product view with a main image and a second detail angle',
+            'Size selector that knows which sizes are low or out of stock',
+            'Collapsible Specifications and Care sections on every product',
+            'Slide-out cart drawer with item count badge and running total',
+            '"Added to cart" confirmation pop-up',
+            'Full-screen archive search overlay with quick filters',
+            'Sustainability content: material traceability, local repair hubs and shipping emissions',
+            'Bold technical typography (Inter + JetBrains Mono) with a signal-red accent',
+            'Fully responsive, from phone to desktop',
+        ],
+        pages: ['Collection', 'Product Detail', 'Cart', 'Journal'],
+        mockupColors: ['#0A0A0A', '#FF3B30', '#F5F5F7'],
+    },
+    {
         id: 'swan-constructions',
         name: 'Swan Constructions',
         tagline: 'Residential construction & renovations',
@@ -17,10 +54,10 @@ const PROJECTS = [
         accentColor: '#C4795A',
         screenshot: swanConstructionsImg,
         screenshotAlt: 'Swan Constructions home page: a dark, editorial hero showing a modern timber and glass home with the headline "Built with care. Built to last."',
-        urlLabel: 'swanconstructions.co.za',
+        urlLabel: 'swanconstruction.co.za',
         tags: ['React', 'Vite', 'Tailwind', 'Framer Motion', 'FormSubmit', 'SEO'],
         delivered: ['Web Design', 'Development', 'Quote Form', 'Local SEO', 'Legal Pages'],
-        liveUrl: null, // replace with the real URL when live
+        liveUrl: 'https://swanconstruction.co.za/',
         pageCount: 25,
         highlights: [
             { value: '12', label: 'Project case studies' },
@@ -56,10 +93,10 @@ const PROJECTS = [
         accentColor: '#44AADD',
         screenshot: pressedInTimeImg,
         screenshotAlt: 'Pressed in Time home page: steam rising from a pressed white shirt behind the headline "Pressed in time. The Wedge."',
-        urlLabel: 'pressedintime.co.za',
+        urlLabel: 'pressedintimethewedge.co.za',
         tags: ['React', 'Vite', 'Tailwind', 'WhatsApp Integration', 'Google Maps', 'Google Ads Tracking'],
         delivered: ['Web Design', 'Development', 'WhatsApp Funnel', 'Price List', 'Conversion Tracking'],
-        liveUrl: null, // replace with the real URL when live
+        liveUrl: 'https://www.pressedintimethewedge.co.za',
         pageCount: 3,
         highlights: [
             { value: '3', label: 'Pages' },
@@ -88,6 +125,31 @@ const PROJECTS = [
         mockupColors: ['#1D3369', '#44AADD', '#A3C4DB'],
     },
 ];
+
+/* ─── OTHER PROJECTS ────────────────────────────────────────────────────── */
+/* Games, software, tools and experiments that are not client websites.
+   Newest first. Add an entry and it appears on the page, nothing else to change.
+   Every field except `id`, `name`, `type` and `description` is optional.
+
+   Example (copy, un-comment and fill in):
+   {
+       id: 'space-dodger',
+       name: 'Space Dodger',
+       type: 'Game',                       // Game | Software | App | Tool | Experiment | ...
+       year: '2026',
+       status: 'Playable',                 // e.g. Playable, In development, Open source
+       description: 'One or two sentences on what it is and what you built.',
+       tags: ['Java', 'LibGDX'],
+       accentColor: '#8B5CF6',             // optional, defaults to the site purple
+       image: spaceDodgerImg,              // optional: import a screenshot at the top of this file
+       imageAlt: 'Space Dodger gameplay',
+       links: [
+           { label: 'Play it', url: 'https://...' },
+           { label: 'Source code', url: 'https://github.com/...' },
+       ],
+   },
+*/
+const OTHER_PROJECTS = [];
 
 /* ─── BROWSER FRAME (real screenshot, falls back to the CSS mockup) ─────── */
 function BrowserMockup({ colors, name }) {
@@ -193,9 +255,67 @@ function ProjectCard({ project, onClick, index }) {
                         <span className="tech-tag muted">+{project.tags.length - 4} more</span>
                     )}
                 </div>
-                <span className="portfolio-card-cta" style={{ color: project.accentColor }}>View Case Study →</span>
+                <div className="portfolio-card-actions">
+                    <span className="portfolio-card-cta" style={{ color: project.accentColor }}>View Case Study →</span>
+                    {project.liveUrl && (
+                        <a
+                            href={project.liveUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="portfolio-live-link"
+                            style={{ '--accent': project.accentColor }}
+                            onClick={e => e.stopPropagation()}
+                            onKeyDown={e => e.stopPropagation()}
+                            aria-label={`Visit the ${project.name} website (opens in a new tab)`}
+                        >
+                            Visit Site <ExternalLink size={14} />
+                        </a>
+                    )}
+                </div>
             </div>
         </div>
+    );
+}
+
+/* ─── OTHER PROJECT CARD (games, software, tools) ────────────────────────── */
+function OtherProjectCard({ project, index }) {
+    const { ref, visible } = useReveal();
+    const accent = project.accentColor || '#8B5CF6';
+    return (
+        <article
+            ref={ref}
+            className={`other-card reveal ${visible ? 'visible' : ''}`}
+            style={{ '--accent': accent, transitionDelay: `${index * 80}ms` }}
+        >
+            {project.image && (
+                <div className="other-card-image">
+                    <img src={project.image} alt={project.imageAlt || project.name} loading="lazy" decoding="async" />
+                </div>
+            )}
+            <div className="other-card-body">
+                <div className="portfolio-card-meta">
+                    <span className="portfolio-tag" style={{ color: accent, background: accent + '1A' }}>{project.type}</span>
+                    {project.status && <span className="other-status">{project.status}</span>}
+                    {project.year && <span className="portfolio-year">{project.year}</span>}
+                </div>
+                <h3>{project.name}</h3>
+                <p>{project.description}</p>
+                {project.tags && project.tags.length > 0 && (
+                    <div className="portfolio-tech-tags">
+                        {project.tags.map(t => <span key={t} className="tech-tag">{t}</span>)}
+                    </div>
+                )}
+                {project.links && project.links.length > 0 && (
+                    <div className="other-card-links">
+                        {project.links.map(l => (
+                            <a key={l.url} href={l.url} target="_blank" rel="noopener noreferrer" className="portfolio-live-link" style={{ '--accent': accent }}>
+                                {l.label} <ExternalLink size={14} />
+                            </a>
+                        ))}
+                    </div>
+                )}
+            </div>
+        </article>
     );
 }
 
@@ -314,7 +434,7 @@ export default function Portfolio() {
 
     // Stats are calculated from PROJECTS, so they update themselves as you add work.
     const stats = [
-        [String(PROJECTS.length), PROJECTS.length === 1 ? 'Client Launched' : 'Clients Launched'],
+        [String(PROJECTS.length), PROJECTS.length === 1 ? 'Project Launched' : 'Projects Launched'],
         [String(PROJECTS.reduce((n, p) => n + p.pageCount, 0)), 'Pages Built'],
         [String(new Set(PROJECTS.map(p => p.category)).size), 'Industries Served'],
         ['100%', 'Mobile Responsive'],
@@ -395,6 +515,34 @@ export default function Portfolio() {
                                 <Link to="/contact" className="portfolio-card-cta">Start a Project →</Link>
                             </div>
                         </div>
+                    </div>
+                </div>
+            </section>
+
+            {/* Other projects: games, software, tools */}
+            <section className="other-projects-section" id="other-projects">
+                <div className="container">
+                    <Reveal>
+                        <div className="portfolio-section-head">
+                            <span className="overline" style={{ color: 'var(--purple)' }}>Beyond Websites</span>
+                            <h2>Games, software &amp; side projects.</h2>
+                            <p className="other-projects-sub">
+                                When I'm not building websites, I'm building other things. Here's a look at the games,
+                                software and experiments I've made.
+                            </p>
+                        </div>
+                    </Reveal>
+                    <div className="other-grid">
+                        {OTHER_PROJECTS.map((p, i) => (
+                            <OtherProjectCard key={p.id} project={p} index={i} />
+                        ))}
+                        {OTHER_PROJECTS.length === 0 && (
+                            <div className="other-card other-empty">
+                                <span className="cs-icon" aria-hidden="true">🎮</span>
+                                <h3>More coming soon</h3>
+                                <p>Games, apps and software I've built will be posted here.</p>
+                            </div>
+                        )}
                     </div>
                 </div>
             </section>
